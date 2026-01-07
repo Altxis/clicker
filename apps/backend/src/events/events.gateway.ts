@@ -33,7 +33,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('message')
   handleMessage(@MessageBody() data: any, @ConnectedSocket() client: Socket): void {
     console.log('Received message:', data);
-    
+
     // Echo back to sender
     client.emit('message', {
       ...data,
@@ -44,7 +44,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('broadcast')
   handleBroadcast(@MessageBody() data: any): void {
     console.log('Broadcasting:', data);
-    
+
     // Broadcast to all connected clients
     this.server.emit('broadcast', {
       ...data,
@@ -55,7 +55,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('incrementCounter')
   async handleIncrementCounter(): Promise<void> {
     const counter = await this.counterService.incrementCounter();
-    
+
     // Broadcast updated counter to all clients
     this.server.emit('counterUpdated', counter);
   }
