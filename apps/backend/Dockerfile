@@ -2,7 +2,8 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 
-# Install pnpm
+# Install OpenSSL and pnpm
+RUN apk add --no-cache openssl
 RUN npm install -g pnpm
 
 # Copy package files
@@ -38,7 +39,8 @@ WORKDIR /app
 
 ENV NODE_ENV production
 
-# Install pnpm
+# Install OpenSSL and pnpm
+RUN apk add --no-cache openssl
 RUN npm install -g pnpm
 
 # Copy necessary files
@@ -48,5 +50,7 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/package.json ./
 
 EXPOSE 3001
+
+CMD ["sh", "-c", "pnpm prisma migrate deploy && node dist/main"]
 
 CMD ["node", "dist/main"]
