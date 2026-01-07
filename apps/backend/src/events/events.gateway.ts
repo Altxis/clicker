@@ -8,6 +8,7 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { CounterService } from '../counter/counter.service';
 
 @WebSocketGateway({
   cors: {
@@ -18,6 +19,8 @@ import { Server, Socket } from 'socket.io';
 export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
+
+  constructor(private counterService: CounterService) {}
 
   handleConnection(client: Socket) {
     console.log(`Client connected: ${client.id}`);
@@ -47,5 +50,13 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       ...data,
       timestamp: new Date().toISOString(),
     });
+  }
+
+  @SubscribeMessage('incrementCounter')
+  async handleIncrementCounter(): Promise<void> {
+    const counter = await this.counterService.incrementCounter();
+    
+    // Broadcast updated counter to all clients
+    this.server.emit('counterUpdated', counter);
   }
 }

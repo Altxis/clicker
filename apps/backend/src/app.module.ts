@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { RedisModule } from './redis/redis.module';
 import { EventsModule } from './events/events.module';
+import { CounterModule } from './counter/counter.module';
 
 @Module({
   imports: [
@@ -14,6 +15,8 @@ import { EventsModule } from './events/events.module';
     }),
     PrismaModule,
     RedisModule,
+    EventsModule,
+    CounterModule,
     EventsModule,
   ],
   controllers: [AppController],
