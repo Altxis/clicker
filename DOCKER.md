@@ -9,6 +9,7 @@ docker-compose -f docker-compose.dev.yml up --build
 ```
 
 This will start:
+
 - PostgreSQL (port 5432)
 - Redis (port 6379)
 - Backend NestJS with hot reload (port 3001, debug port 9229)
@@ -57,6 +58,7 @@ docker-compose down
 ## Useful Commands
 
 ### View logs
+
 ```bash
 # All services
 docker-compose -f docker-compose.dev.yml logs -f
@@ -67,17 +69,20 @@ docker-compose -f docker-compose.dev.yml logs -f frontend
 ```
 
 ### Rebuild specific service
+
 ```bash
 docker-compose -f docker-compose.dev.yml up --build backend
 docker-compose -f docker-compose.dev.yml up --build frontend
 ```
 
 ### Access database
+
 ```bash
 docker exec -it clicker-postgres-dev psql -U postgres -d clicker
 ```
 
 ### Access Redis CLI
+
 ```bash
 docker exec -it clicker-redis-dev redis-cli
 ```
