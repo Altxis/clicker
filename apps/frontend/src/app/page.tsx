@@ -8,6 +8,7 @@ export default function Home() {
   const [isConnected, setIsConnected] = useState(false);
   const [counter, setCounter] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setMounted(true);
@@ -31,8 +32,13 @@ export default function Home() {
     // Fetch initial counter value
     fetch(process.env.NEXT_PUBLIC_API_URL + '/counter' || 'http://localhost:3001/counter')
       .then((res) => res.json())
-      .then((data) => setCounter(data.value))
-      .catch(() => {});
+      .then((data) => {
+        setCounter(data.value);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
 
     return () => {
       socketInstance.disconnect();
@@ -45,11 +51,11 @@ export default function Home() {
     }
   };
 
-  if (!mounted) {
+  if (!mounted || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="text-9xl">0</div>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
         </div>
       </div>
     );
