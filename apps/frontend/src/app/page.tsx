@@ -15,12 +15,10 @@ export default function Home() {
     const socketInstance = io(process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:3001');
 
     socketInstance.on('connect', () => {
-      console.log('Connected to WebSocket');
       setIsConnected(true);
     });
 
     socketInstance.on('disconnect', () => {
-      console.log('Disconnected from WebSocket');
       setIsConnected(false);
     });
 
@@ -34,7 +32,7 @@ export default function Home() {
     fetch(process.env.NEXT_PUBLIC_API_URL + '/counter' || 'http://localhost:3001/counter')
       .then((res) => res.json())
       .then((data) => setCounter(data.value))
-      .catch(console.error);
+      .catch(() => {});
 
     return () => {
       socketInstance.disconnect();
