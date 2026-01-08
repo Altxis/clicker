@@ -11,7 +11,7 @@ export default function Home() {
 
   useEffect(() => {
     setMounted(true);
-    
+
     const socketInstance = io(process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:3001');
 
     socketInstance.on('connect', () => {
