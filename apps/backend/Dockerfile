@@ -7,11 +7,11 @@ RUN apk add --no-cache openssl
 RUN npm install -g pnpm
 
 # Copy package files
-COPY package.json pnpm-lock.yaml* ./
+COPY package.json ./
 COPY prisma ./prisma/
 
 # Install dependencies
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --no-frozen-lockfile
 
 # Generate Prisma Client
 RUN pnpm prisma generate
@@ -23,15 +23,25 @@ WORKDIR /app
 # Install pnpm
 RUN npm install -g pnpm
 
-# Copy dependencies
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/prisma ./prisma
+# Copy package files for builder stage
+COPY package.json ./
+COPY prisma ./prisma/
 
-# Copy source code
+# Install all dependencies including devDependencies for build
+RUN pnpm install --no-frozen-lockfile
+
+# Generate Prisma Client
+RUN pnpm prisma generate
+
+# Copy all source files and configs
 COPY . .
 
 # Build application
 RUN pnpm build
+
+# Debug: Check what was built
+RUN echo "=== Contents of /app ===" && ls -la /app/
+RUN echo "=== Contents of /app/dist ===" && ls -la /app/dist/ || echo "dist directory not found"
 
 # Stage 3: Runner
 FROM node:20-alpine AS runner
@@ -49,8 +59,10 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/package.json ./
 
+# Verify dist was copied
+RUN ls -la /app/
+RUN ls -la /app/dist/
+
 EXPOSE 3001
 
-CMD ["sh", "-c", "pnpm prisma migrate deploy && node dist/main"]
-
-CMD ["node", "dist/main"]
+CMD ["sh", "-c", "pnpm prisma migrate deploy && pnpm start:prod"]
