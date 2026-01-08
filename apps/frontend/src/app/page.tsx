@@ -7,8 +7,11 @@ export default function Home() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [counter, setCounter] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+    
     const socketInstance = io(process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:3001');
 
     socketInstance.on('connect', () => {
@@ -43,6 +46,16 @@ export default function Home() {
       socket.emit('incrementCounter');
     }
   };
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-9xl">0</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
